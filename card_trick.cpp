@@ -140,7 +140,7 @@ int card_trick()
                  MASK_RIGHT = 0;
                  MASK_UP = 0;
                  MASK_DOWN = 0;
-                applyMask(frame, input, warped_frame);
+                applyMask(frame, input, warped_frame,0);
 
                 cv::waitKey(10);
             }
@@ -251,7 +251,7 @@ int imagematching(Mat& img1, Mat& img2, std::vector<Point2f>& first_keypoints, s
 }
 
 
-int applyMask(cv::Mat& src, cv::Mat& dst, cv::Mat& mask)
+int applyMask(cv::Mat& src, cv::Mat& dst, cv::Mat& mask, int threshold)
 {
 
     src.copyTo(dst);
@@ -264,7 +264,7 @@ int applyMask(cv::Mat& src, cv::Mat& dst, cv::Mat& mask)
         for (int j = 0; j < src.cols; j = j + 1)
         {
 
-            if (mask.at<cv::Vec3b>(i, j)[0] + mask.at<cv::Vec3b>(i, j)[1] + mask.at<cv::Vec3b>(i, j)[2] == 0)
+            if (mask.at<cv::Vec3b>(i, j)[0] + mask.at<cv::Vec3b>(i, j)[1] + mask.at<cv::Vec3b>(i, j)[2] <= threshold)
                 j = j; //do nothing in the dark
             else {
                 dst.at<cv::Vec3b>(i, j) = mask.at<cv::Vec3b>(i, j);

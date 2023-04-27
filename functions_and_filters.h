@@ -32,6 +32,7 @@ int virtual_mirror();
 int card_trick();
 int imagematching(cv::Mat& img1, cv::Mat& img2, std::vector<cv::Point2f>& first_keypoints, std::vector<cv::Point2f>& second_keypoints, cv::Mat& homography);
 
-int applyMask(cv::Mat& src, cv::Mat& dst, cv::Mat& mask);
+int applyMask(cv::Mat& src, cv::Mat& dst, cv::Mat& mask,int threshold );
 int pull_the_rabbit();
 int applyBorder(cv::Mat& src);
+int portal(cv::Mat& src, cv::Mat& temp1, cv::Mat& dst);

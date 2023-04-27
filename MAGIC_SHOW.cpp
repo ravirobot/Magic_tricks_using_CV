@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
     int key14 = 0;
     int key15 = 0;
     int time = 0;
-    cv::Mat result_frame, background_frame;
+    cv::Mat result_frame, background_frame, temp1;
 
     // open the video device
     capdev = new cv::VideoCapture(0);
@@ -105,6 +105,31 @@ int main(int argc, char* argv[]) {
             break;
 
         }
+        if (key == '1') {
+            key15 = (key15 + 1) % 2;time = 0;frame.copyTo(temp1);
+        }
+        if (key15 == 1)
+        {
+
+            optical_flow(frame, temp1, result_frame);
+            if (time%10==0)
+                result_frame.copyTo(temp1);
+            //if (time % 100 == 0) 
+            //frame.copyTo(temp1);
+        }
+        if (key == '2') {
+            key11 = (key11 + 1) % 2;time = 0;frame.copyTo(temp1);
+        }
+        if (key11 == 1)
+        {
+
+            portal(frame, temp1, result_frame);
+            //if (time%2==0)
+                //result_frame.copyTo(temp1);
+            //if (time % 50 == 0) 
+            frame.copyTo(temp1);
+        }
+
         cv::imshow("Resultant  Video", result_frame);
     }
 

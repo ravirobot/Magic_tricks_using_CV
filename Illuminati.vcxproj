@@ -131,6 +131,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="card_trick.cpp" />
+    <ClCompile Include="dr_strange.cpp" />
     <ClCompile Include="functions_and_filters.cpp" />
     <ClCompile Include="invisibility_cloak.cpp" />
     <ClCompile Include="MAGIC_SHOW.cpp" />

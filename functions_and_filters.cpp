@@ -616,33 +616,3 @@ int extension_blinds(cv::Mat& src, cv::Mat& dst, int t, int k)
     return(0);
 }
 
-int optical_flow(cv::Mat& src, cv::Mat& temp1, cv::Mat& dst)
-{
-    //blurQuantize(src, dst, 10);
-    src.copyTo(dst);
-    dst.convertTo(dst, CV_8UC3);
-    src.convertTo(src, CV_8UC3);
-    temp1.convertTo(temp1, CV_8UC3);
-    int ind = 0;
-    int f = 0;
-    for (int i = 0; i < src.rows; i = i + 1)
-    {
-        for (int j = 0; j < src.cols; j = j + 1)
-        {
-
-            for (int c = 0; c < 3; c++)
-            {
-                if (src.at<cv::Vec3b>(i, j)[c] - temp1.at<cv::Vec3b>(i, j)[c] > 0)
-                    dst.at<cv::Vec3b>(i, j)[c] = src.at<cv::Vec3b>(i, j)[c] - temp1.at<cv::Vec3b>(i, j)[c];
-                else// if (src.at<cv::Vec3b>(i, j)[c] - temp1.at<cv::Vec3b>(i, j)[c] < 0)
-                    dst.at<cv::Vec3b>(i, j)[c] = -src.at<cv::Vec3b>(i, j)[c] + temp1.at<cv::Vec3b>(i, j)[c];
-                //else
-                  //  dst.at<cv::Vec3b>(i, j)[c] = src.at<cv::Vec3b>(i, j)[c];
-            }
-        }
-    }
-
-
-    convertScaleAbs(dst, dst);
-    return(0);
-}

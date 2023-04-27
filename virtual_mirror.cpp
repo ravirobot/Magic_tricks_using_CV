@@ -73,7 +73,7 @@ int virtual_mirror()
         
         cv::warpAffine(frame_rev, warped_frame, M, warped_frame.size());
         
-        applyMask(frame, result_frame, warped_frame);
+        applyMask(frame, result_frame, warped_frame,0);
         cv::imshow("Mirror", result_frame);
 
  
