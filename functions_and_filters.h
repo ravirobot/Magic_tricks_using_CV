@@ -34,3 +34,4 @@ int imagematching(cv::Mat& img1, cv::Mat& img2, std::vector<cv::Point2f>& first_
 
 int applyMask(cv::Mat& src, cv::Mat& dst, cv::Mat& mask);
 int pull_the_rabbit();
+int applyBorder(cv::Mat& src);

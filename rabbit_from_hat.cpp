@@ -16,6 +16,7 @@ NUID:002104786
 #include "fstream"
 //#include "common.h"
 //#include <opencv2/imgproc/imgproc.hpp>
+#define HOLD_RABBIT_VALUE 120
 using namespace cv;
 using namespace std;
 
@@ -26,6 +27,8 @@ struct Vertex {
 struct Face {
     int v1, v2, v3;
 };
+double THETA = 0;
+int hold_rabbit = 0;
 
 int draw3D(Mat& src, Mat& dst, InputArray drawingW,
     InputArray rvec, InputArray tvec,
@@ -57,11 +60,17 @@ int draw3D(Mat& src, Mat& dst, InputArray drawingW,
             Vertex vertex;
             sscanf(line.c_str(), "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
             vertices.push_back(vertex);
+            float a = vertex.z * scale3d;
+            float b = vertex.y * scale3d + t;
+            float c = vertex.x * scale3d;
+
+            float A = a * cos(THETA) - c * sin(THETA);
+            float C = -a * sin(THETA) + c * cos(THETA);
 
             if((num_points>350)&&(num_points<450))
-                drawing.push_back({ vertex.z * scale3d, vertex.y * scale3d +t, vertex.x * scale3d  });
+                drawing.push_back({ A, b,  C });
             else
-                drawing2.push_back({ vertex.z * scale3d, (vertex.y * scale3d)+ translate + t, vertex.x * scale3d });
+                drawing2.push_back({ A, b+translate,  C });
         }
         else if (prefix == "f ") {
             Face face;
@@ -92,7 +101,7 @@ int draw3D(Mat& src, Mat& dst, InputArray drawingW,
     {
         Point pt1(imagePoints.at<float>(p - 1, 0), imagePoints.at<float>(p - 1, 1));
         Point pt2(imagePoints.at<float>(p, 0), imagePoints.at<float>(p, 1));
-        Scalar font_Color(0, 255, 0);
+        Scalar font_Color(0, 255-  hold_rabbit, 0);
         cv::line(src, pt1, pt2, font_Color, 1);
     }
 
@@ -101,7 +110,7 @@ int draw3D(Mat& src, Mat& dst, InputArray drawingW,
     {
         Point pt1(imagePoints.at<float>(p - 1, 0), imagePoints.at<float>(p - 1, 1));
         Point pt2(imagePoints.at<float>(p, 0), imagePoints.at<float>(p, 1));
-        Scalar font_Color(0, 255, 0);
+        Scalar font_Color(0, 255- hold_rabbit, 0);
         cv::line(src, pt1, pt2, font_Color, 1);
     }
     dst = src;
@@ -117,7 +126,7 @@ int pull_the_rabbit()
     cv::Mat rvec, tvec, img_pts;
     int index = 0;
     int key1=0, key2 = 0, key3 = 0, key4 = 0, key5 = 0;
-    int hold_rabbit = 0;
+  
     Size patternsize(9, 6); //interior number of corners
     Mat gray;//cv::imread("C:/Northeastern/PRCV/visual C/ObjectRecognition/ObjectRecognition/objects_database/checkerboard.png");; //source image
     vector<Point2f> corners; //this will be filled by the detected corners
@@ -137,6 +146,7 @@ int pull_the_rabbit()
     bool  show_axis = false, sift = false;
     int usePnp = 0;
     int rabbit_up=0, rabb2=0;
+    float rabbit_rot = 0;
     cv::Mat input;
     cv::Ptr<cv::SiftFeatureDetector> detector;
 
@@ -245,11 +255,14 @@ int pull_the_rabbit()
          if(usePnp == 1) 
          {
             bool pnp = cv::solvePnP(point_list[0], corners_prev, cam_cal, distCoeffs, rvec, tvec);
+            //rvec.at<Vec2f>(0, 1)[1] = rvec.at<Vec2f>(0, 1)[1] + rabbit_rot; //rotate the rabbit
             draw3D(frame, final_frame, drawing, rvec, tvec, cam_cal, distCoeffs, img_pts, rabbit_up);
+            //std::cout << "Rotation vector" << rvec.at<Vec2f>(0,2)[1] << endl;
+            //std::cout << "Translation vector" << tvec << endl;
             
             
          }
-         if (key == 'u') { key3 = (key3 + 1) % 2; key1 = 0; rabbit_up = 0; key2 = 0; key1 = 0; rabb2 = 40; }
+         if (key == 'u') { key3 = (key3 + 1) % 2; key1 = 0; rabbit_up = 0; key2 = 0; key1 = 0; rabb2 = 40; rabbit_rot = 0; }
          if (key3 == 1)
          {
              hide_rabbit = true;
@@ -262,7 +275,7 @@ int pull_the_rabbit()
              if ((rabbit_up > 350)&&(key1 == 0))
              {
                  key1 = 1;
-                 hold_rabbit = 120; //hold timer
+                 hold_rabbit = 0; //hold timer
              }
              if ((key1 == 1) && (key2 == 0))
              {
@@ -273,9 +286,10 @@ int pull_the_rabbit()
                      key2 == 1;
                      key3 = 0;
                  } 
-                 else if (hold_rabbit > 0) 
+                 else if (hold_rabbit < HOLD_RABBIT_VALUE)
                  {
-                     hold_rabbit--;
+                     hold_rabbit++;
+                     THETA += 0.01;
                  }
                  else
                      rabbit_up = rabbit_up - 6;

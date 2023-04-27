@@ -55,7 +55,7 @@ int card_trick()
             break;
         }
 
-        cv::imshow("Real", frame);
+        
         char key = cv::waitKey(10);
         if (key == 'q') {
             break;
@@ -145,15 +145,17 @@ int card_trick()
                 cv::waitKey(10);
             }
             if ((h==true)&&(MASK_AREA < 50000) && (MASK_RIGHT - MASK_LEFT < 500) && (MASK_DOWN - MASK_UP < 1000))
-                cv::imshow("Mirror", input);
+               // cv::imshow("Mirror", input);
+            input.copyTo(frame);
             else
-                cv::imshow("Mirror", frame);
+            {
+            } //cv::imshow("Mirror", frame);
             //imshow("Good Matches & Object detection", img_matches);
             //std::cout << "Transformatgion" << homography << endl;
             //std::cout << "TraM" << M << endl;
 
         }
-
+        cv::imshow("Real", frame);
     }
 	return 0;
 }
@@ -234,7 +236,7 @@ int imagematching(Mat& img1, Mat& img2, std::vector<Point2f>& first_keypoints, s
     }
     keypoints1.clear();
     keypoints2.clear();
-    if (good_matches.size() > 20)
+    if (good_matches.size() > 30)
     {
         homography = findHomography( second_keypoints, first_keypoints, RANSAC, 5);
         homo_found = true;
